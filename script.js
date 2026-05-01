@@ -4,20 +4,34 @@ const generateBtn = document.getElementById('generate-btn');
 const linkBox = document.getElementById('link-box');
 const linkDisplay = document.getElementById('link-display');
 const copyBtn = document.getElementById('copy-btn');
+const songUpload = document.getElementById('song-upload');
+const songPreview = document.getElementById('song-preview');
 
 let uploadedPhotos = [];
+let uploadedSongBase64 = '';
 
-// Show photo previews as user selects them
+// Song upload
+songUpload.addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    uploadedSongBase64 = e.target.result;
+    songPreview.style.display = 'block';
+    songPreview.querySelector('p').textContent = '🎵 ' + file.name + ' — ready!';
+  };
+  reader.readAsDataURL(file);
+});
+
+// Photo previews
 photoUpload.addEventListener('change', function() {
   const files = Array.from(this.files).slice(0, 5);
   uploadedPhotos = [];
   photoPreview.innerHTML = '';
-
   files.forEach(file => {
     const reader = new FileReader();
     reader.onload = function(e) {
       uploadedPhotos.push(e.target.result);
-
       const img = document.createElement('img');
       img.src = e.target.result;
       photoPreview.appendChild(img);
@@ -26,12 +40,11 @@ photoUpload.addEventListener('change', function() {
   });
 });
 
-// Generate the shareable link
+// Generate link
 generateBtn.addEventListener('click', function() {
   const senderName = document.getElementById('sender-name').value.trim();
   const receiverName = document.getElementById('receiver-name').value.trim();
   const message = document.getElementById('message').value.trim();
-  const songUrl = document.getElementById('song-url').value.trim();
 
   if (!senderName || !receiverName || !message) {
     alert('Please fill in your name, their name and your message!');
@@ -42,24 +55,26 @@ generateBtn.addEventListener('click', function() {
     sender: senderName,
     receiver: receiverName,
     message: message,
-    song: songUrl,
+    song: uploadedSongBase64,
     photos: uploadedPhotos
   };
 
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
   const proposalUrl = `${window.location.origin}/proposal.html?data=${encoded}`;
+  const linkText = `Proposal from ${senderName} to ${receiverName}`;
+
+  // Set the clickable anchor
+  const anchor = document.getElementById('proposal-link-anchor');
+  anchor.textContent = linkText;
+  anchor.href = proposalUrl;
 
   linkDisplay.textContent = proposalUrl;
   linkBox.style.display = 'block';
-});
 
-// Copy link to clipboard
-copyBtn.addEventListener('click', function() {
-  const link = linkDisplay.textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    copyBtn.textContent = 'Copied! ✅';
-    setTimeout(() => {
-      copyBtn.textContent = 'Copy Link 📋';
-    }, 2000);
+  copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText(proposalUrl).then(() => {
+      copyBtn.textContent = 'Copied! ✅';
+      setTimeout(() => copyBtn.textContent = 'Copy Link 📋', 2000);
+    });
   });
 });
