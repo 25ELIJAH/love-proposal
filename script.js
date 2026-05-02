@@ -44,7 +44,7 @@ generateBtn.addEventListener('click', function() {
   };
 
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-  const proposalUrl = `${window.location.origin}/proposal.html?data=${encoded}`;
+const proposalUrl = `https://my-love-proposal-app.netlify.app/proposal.html?data=${encoded}`;
   const linkText = `Proposal from ${senderName} to ${receiverName}`;
 
   const anchor = document.getElementById('proposal-link-anchor');
