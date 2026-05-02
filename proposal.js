@@ -23,29 +23,153 @@ if (!encoded) {
       </div>
     </div>
   `;
-
-  // Download letter button
+// Download letter as PDF
   const downloadBtn = document.createElement('button');
   downloadBtn.textContent = '📜 Download This Letter';
   downloadBtn.classList.add('download-btn');
   downloadBtn.addEventListener('click', function() {
-    const letterContent = `
-My Dearest ${data.receiver},
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-${data.message}
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 25;
+    const contentWidth = pageWidth - margin * 2;
 
-To: ${data.receiver}
-With all my love,
-${data.sender}
-    `.trim();
+    // Parchment background
+    doc.setFillColor(249, 237, 216);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-    const blob = new Blob([letterContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `A Letter to ${data.receiver} from ${data.sender}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Outer border
+    doc.setDrawColor(184, 134, 11);
+    doc.setLineWidth(0.8);
+    doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+
+    // Inner border
+    doc.setDrawColor(196, 150, 30);
+    doc.setLineWidth(0.3);
+    doc.rect(13, 13, pageWidth - 26, pageHeight - 26);
+
+    // Top decorative line
+    doc.setDrawColor(184, 134, 11);
+    doc.setLineWidth(0.5);
+    doc.line(margin, 30, pageWidth - margin, 30);
+    doc.line(margin, 32, pageWidth - margin, 32);
+
+    // Corner flourishes
+    doc.setFontSize(16);
+    doc.setTextColor(184, 134, 11);
+    doc.text('❧', 15, 22);
+    doc.text('❧', pageWidth - 22, 22);
+
+    // PDF Title at top center
+    doc.setFontSize(11);
+    doc.setTextColor(139, 38, 53);
+    doc.setFont('times', 'italic');
+    const pdfTitle = `${data.receiver}'s Proposal Letter`;
+    doc.text(pdfTitle, pageWidth / 2, 24, { align: 'center' });
+
+    // Greeting
+    doc.setFontSize(18);
+    doc.setTextColor(44, 24, 16);
+    doc.setFont('times', 'bolditalic');
+    doc.text(`My Dearest ${data.receiver},`, margin, 46);
+
+    // Divider under greeting
+    doc.setDrawColor(196, 160, 110);
+    doc.setLineWidth(0.3);
+    doc.line(margin, 50, pageWidth - margin, 50);
+
+    // Letter body
+    doc.setFontSize(13);
+    doc.setFont('times', 'italic');
+    doc.setTextColor(44, 24, 16);
+
+    const lines = doc.splitTextToSize(data.message, contentWidth);
+    let yPos = 62;
+    const lineHeight = 8;
+
+    lines.forEach(line => {
+      if (yPos > pageHeight - 60) {
+        doc.addPage();
+        // Parchment background on new page
+        doc.setFillColor(249, 237, 216);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setDrawColor(184, 134, 11);
+        doc.setLineWidth(0.8);
+        doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+        yPos = 30;
+      }
+      doc.setTextColor(44, 24, 16);
+      doc.text(line, margin, yPos);
+      yPos += lineHeight;
+    });
+
+    // Signature section
+    yPos += 10;
+
+    // Divider before signature
+    doc.setDrawColor(196, 160, 110);
+    doc.setLineWidth(0.3);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    yPos += 10;
+
+    // To recipient
+    doc.setFontSize(11);
+    doc.setFont('times', 'italic');
+    doc.setTextColor(92, 61, 46);
+    doc.text(`To: ${data.receiver}`, margin, yPos);
+
+    // Closing and sender name on right
+    doc.setFontSize(12);
+    doc.setFont('times', 'italic');
+    doc.setTextColor(44, 24, 16);
+    doc.text('With all my love,', pageWidth - margin, yPos, { align: 'right' });
+    yPos += 10;
+
+    doc.setFontSize(20);
+    doc.setFont('times', 'bolditalic');
+    doc.setTextColor(139, 38, 53);
+    doc.text(data.sender, pageWidth - margin, yPos, { align: 'right' });
+
+    // Bottom decorative line
+    doc.setDrawColor(184, 134, 11);
+    doc.setLineWidth(0.5);
+    doc.line(margin, pageHeight - 30, pageWidth - margin, pageHeight - 30);
+    doc.line(margin, pageHeight - 28, pageWidth - margin, pageHeight - 28);
+
+    // Date and time at bottom
+    const now = new Date();
+    const day = now.getDate();
+    const monthNames = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+    const dateString = `Written on this day, the ${day}th of ${month}, in the year ${year} — at ${hour12}:${minutes} ${ampm}`;
+
+    doc.setFontSize(9);
+    doc.setFont('times', 'italic');
+    doc.setTextColor(92, 61, 46);
+    doc.text(dateString, pageWidth / 2, pageHeight - 20, { align: 'center' });
+
+    // Bottom corner flourish
+    doc.setFontSize(14);
+    doc.setTextColor(184, 134, 11);
+    doc.text('❧', 15, pageHeight - 15);
+    doc.text('❧', pageWidth - 20, pageHeight - 15);
+
+    // Save the PDF
+    doc.save(`${data.receiver}'s Proposal Letter.pdf`);
   });
   messageDiv.appendChild(downloadBtn);
 
