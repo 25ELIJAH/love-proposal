@@ -4,30 +4,15 @@ const generateBtn = document.getElementById('generate-btn');
 const linkBox = document.getElementById('link-box');
 const linkDisplay = document.getElementById('link-display');
 const copyBtn = document.getElementById('copy-btn');
-const songUpload = document.getElementById('song-upload');
-const songPreview = document.getElementById('song-preview');
 
 let uploadedPhotos = [];
-let uploadedSongBase64 = '';
 
-// Song upload
-songUpload.addEventListener('change', function() {
-  const file = this.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    uploadedSongBase64 = e.target.result;
-    songPreview.style.display = 'block';
-    songPreview.querySelector('p').textContent = '🎵 ' + file.name + ' — ready!';
-  };
-  reader.readAsDataURL(file);
-});
-
-// Photo previews
+// Show photo previews as user selects them
 photoUpload.addEventListener('change', function() {
   const files = Array.from(this.files).slice(0, 5);
   uploadedPhotos = [];
   photoPreview.innerHTML = '';
+
   files.forEach(file => {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -40,7 +25,7 @@ photoUpload.addEventListener('change', function() {
   });
 });
 
-// Generate link
+// Generate the shareable link
 generateBtn.addEventListener('click', function() {
   const senderName = document.getElementById('sender-name').value.trim();
   const receiverName = document.getElementById('receiver-name').value.trim();
@@ -55,7 +40,6 @@ generateBtn.addEventListener('click', function() {
     sender: senderName,
     receiver: receiverName,
     message: message,
-    song: uploadedSongBase64,
     photos: uploadedPhotos
   };
 
@@ -63,7 +47,6 @@ generateBtn.addEventListener('click', function() {
   const proposalUrl = `${window.location.origin}/proposal.html?data=${encoded}`;
   const linkText = `Proposal from ${senderName} to ${receiverName}`;
 
-  // Set the clickable anchor
   const anchor = document.getElementById('proposal-link-anchor');
   anchor.textContent = linkText;
   anchor.href = proposalUrl;
