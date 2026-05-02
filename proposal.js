@@ -60,15 +60,11 @@ ${data.sender}
     });
   }
 
-  // Background music
-  const audio = document.getElementById('love-song');
-  audio.src = 'https://cdn.pixabay.com/audio/2022/10/30/audio_b73ed5e8ca.mp3';
-  audio.volume = 0.2;
-  audio.loop = true;
+  // Music plays via hidden YouTube iframe
+  // Unmutes on first click since browsers block autoplay with sound
+  const ytFrame = document.getElementById('yt-music');
 
-  // Show tap to play hint
   const playHint = document.createElement('div');
-  playHint.id = 'play-hint';
   playHint.textContent = '🎵 Tap anywhere to play music';
   playHint.style.cssText = `
     position: fixed;
@@ -89,12 +85,10 @@ ${data.sender}
   `;
   document.body.appendChild(playHint);
 
-  function startMusic() {
-    audio.play().then(() => {
-      playHint.style.display = 'none';
-    }).catch(() => {});
-  }
-
+  document.addEventListener('click', () => {
+    ytFrame.src = "https://www.youtube.com/embed/vGJTaP6anOU?autoplay=1&loop=1&playlist=vGJTaP6anOU&controls=0";
+    playHint.style.display = 'none';
+  }, { once: true });
   // Try autoplay immediately
   startMusic();
 
