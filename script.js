@@ -36,7 +36,7 @@ generateBtn.addEventListener('click', function() {
     return;
   }
 
-  const data = {
+  const data = {    
     sender: senderName,
     receiver: receiverName,
     message: message,

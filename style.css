@@ -639,3 +639,105 @@ textarea {
   font-weight: normal;
   display: block;
 }
+
+/* ---- MOBILE RESPONSIVE ---- */
+
+@media (max-width: 600px) {
+
+  .builder-card,
+  .proposal-card,
+  .celebration-card {
+    margin: 1rem;
+    padding: 1.5rem 1.2rem;
+    border-radius: 4px;
+  }
+
+  .builder-header h1,
+  .proposal-header h1 {
+    font-size: 36px;
+  }
+
+  .builder-header p,
+  .proposal-header p {
+    font-size: 12px;
+  }
+
+  input, textarea {
+    font-size: 14px;
+  }
+
+  .photo-preview img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .memories img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .proposal-message,
+  .letter-paper {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .letter-body {
+    font-size: 14px;
+    line-height: 28px;
+  }
+
+  .letter-from {
+    font-size: 22px;
+  }
+
+  .letter-from strong {
+    font-size: 26px;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .yes-btn,
+  .no-btn {
+    width: 80%;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .celebration-card h1 {
+    font-size: 36px;
+  }
+
+  .celebration-card p {
+    font-size: 14px;
+  }
+
+  .confetti-container {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
+
+  #generate-btn,
+  #copy-btn {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .proposal-link-anchor {
+    font-size: 13px;
+  }
+
+  .letter-signature {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
