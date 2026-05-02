@@ -49,10 +49,12 @@ ${data.sender}
   });
   messageDiv.appendChild(downloadBtn);
 
-  // Load photos
+  
+  // Load photos from localStorage
   const memoriesDiv = document.getElementById('memories');
-  if (data.photos && data.photos.length > 0) {
-    data.photos.forEach(photoSrc => {
+  const savedPhotos = localStorage.getItem('proposalPhotos');
+  if (data.hasPhotos && savedPhotos) {
+    JSON.parse(savedPhotos).forEach(photoSrc => {
       const img = document.createElement('img');
       img.src = photoSrc;
       memoriesDiv.appendChild(img);

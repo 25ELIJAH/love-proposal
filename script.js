@@ -7,7 +7,7 @@ const copyBtn = document.getElementById('copy-btn');
 
 let uploadedPhotos = [];
 
-// Show photo previews as user selects them
+// Show photo previews
 photoUpload.addEventListener('change', function() {
   const files = Array.from(this.files).slice(0, 5);
   uploadedPhotos = [];
@@ -36,15 +36,21 @@ generateBtn.addEventListener('click', function() {
     return;
   }
 
-  const data = {    
+  // Store photos in localStorage separately
+  if (uploadedPhotos.length > 0) {
+    localStorage.setItem('proposalPhotos', JSON.stringify(uploadedPhotos));
+  }
+
+  // Only put text data in the URL — keeps it short!
+  const data = {
     sender: senderName,
     receiver: receiverName,
     message: message,
-    photos: uploadedPhotos
+    hasPhotos: uploadedPhotos.length > 0
   };
 
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-const proposalUrl = `https://my-love-proposal-app.netlify.app/proposal.html?data=${encoded}`;
+  const proposalUrl = `https://my-love-proposal-app.netlify.app/proposal.html?data=${encoded}`;
   const linkText = `Proposal from ${senderName} to ${receiverName}`;
 
   const anchor = document.getElementById('proposal-link-anchor');
