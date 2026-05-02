@@ -239,20 +239,186 @@ if (!encoded) {
 
   setInterval(createHeart, 600);
 
-  // Yes and No buttons
+ // Yes and No buttons
   const yesBtn = document.getElementById('yes-btn');
   const noBtn = document.getElementById('no-btn');
   const celebration = document.getElementById('celebration');
 
   yesBtn.addEventListener('click', function() {
-    celebration.style.display = 'flex';
-    document.getElementById('celebration-message').innerHTML = `
-      <em>"There is no fear in love; but perfect love casteth out fear."</em><br/>
-      — 1 John 4:18 —<br/><br/>
-      ${data.receiver}, you just made ${data.sender}'s world complete. 💍
+
+    // Hide the proposal card
+    document.getElementById('proposal-card').style.display = 'none';
+
+    // Create full screen celebration
+    const boom = document.createElement('div');
+    boom.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      animation: fadeInUp 0.8s ease forwards;
+      overflow: hidden;
+      padding: 2rem;
     `;
-    const confetti = document.getElementById('confetti-container');
-    confetti.textContent = '🎉🎊💍💖🥂✨🌹🎀';
+
+    boom.innerHTML = `
+      <div id="fireworks-container" style="position:fixed;inset:0;pointer-events:none;z-index:0;"></div>
+
+      <div style="
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(160deg, #f9edd8 0%, #f0d9aa 40%, #e8c98a 100%);
+        border-radius: 4px;
+        padding: 3rem 2.5rem;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow:
+          0 0 0 1px #c9a96e,
+          0 0 0 4px #f4e4c1,
+          0 0 0 5px #b8860b,
+          10px 10px 60px rgba(0,0,0,0.8);
+        border-top: 3px double #b8860b;
+        border-bottom: 3px double #b8860b;
+        animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      ">
+        <div style="font-size: 60px; margin-bottom: 0.5rem; animation: heartbeat 1s infinite;">💍</div>
+
+        <h1 style="
+          font-family: 'Pinyon Script', cursive;
+          font-size: 52px;
+          color: #8b2635;
+          line-height: 1.2;
+          margin-bottom: 0.5rem;
+        ">She Said Yes!</h1>
+
+        <div style="
+          font-size: 32px;
+          letter-spacing: 6px;
+          margin: 0.8rem 0;
+          animation: pulse 1s infinite alternate;
+        ">🎉💖🥂✨🌹🎊💍🎀</div>
+
+        <div style="
+          background: rgba(139, 38, 53, 0.08);
+          border: 1px solid #c9a96e;
+          border-radius: 4px;
+          padding: 1.2rem 1.5rem;
+          margin: 1.2rem 0;
+        ">
+          <p style="
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 17px;
+            color: #2c1810;
+            font-style: italic;
+            line-height: 1.9;
+            margin-bottom: 8px;
+          ">"And now these three remain: faith, hope and love.<br/>But the greatest of these is love."</p>
+          <p style="
+            font-family: 'Lato', sans-serif;
+            font-size: 11px;
+            color: #5c3d2e;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+          ">— 1 Corinthians 13:13 —</p>
+        </div>
+
+        <p style="
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 18px;
+          color: #2c1810;
+          font-style: italic;
+          line-height: 1.8;
+          margin-bottom: 1.2rem;
+        ">
+          ${data.receiver}, you just made ${data.sender} the luckiest person alive. 💍<br/>
+          Your love story has just begun — and it will be beautiful.
+        </p>
+
+        <div style="
+          font-family: 'Lato', sans-serif;
+          font-size: 11px;
+          color: #b8860b;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          border-top: 1px solid #d4b896;
+          padding-top: 1rem;
+          margin-top: 0.5rem;
+        ">❧ Forever Starts Today ❧</div>
+      </div>
+    `;
+
+    document.body.appendChild(boom);
+
+    // Add keyframe animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes popIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes heartbeat {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      @keyframes firework {
+        0% { transform: translate(0,0) scale(1); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Launch fireworks
+    const fireworksContainer = document.getElementById('fireworks-container');
+    const colors = ['#ff6b9d', '#ffd700', '#ff4444', '#00ffcc', '#ff9966', '#ffffff', '#b8860b'];
+
+    function launchFirework() {
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight * 0.7;
+
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        const angle = (i / 20) * 360;
+        const distance = Math.random() * 120 + 60;
+        const dx = Math.cos(angle * Math.PI / 180) * distance;
+        const dy = Math.sin(angle * Math.PI / 180) * distance;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 8 + 4;
+
+        particle.style.cssText = `
+          position: absolute;
+          left: ${x}px;
+          top: ${y}px;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          border-radius: 50%;
+          --dx: ${dx}px;
+          --dy: ${dy}px;
+          animation: firework ${Math.random() * 0.8 + 0.6}s ease-out forwards;
+          box-shadow: 0 0 6px ${color};
+        `;
+        fireworksContainer.appendChild(particle);
+        setTimeout(() => particle.remove(), 1400);
+      }
+    }
+
+    // Launch fireworks repeatedly
+    launchFirework();
+    const fireworkInterval = setInterval(launchFirework, 600);
+    setTimeout(() => clearInterval(fireworkInterval), 8000);
+
+    // Keep launching hearts too
+    const heartsContainer = document.getElementById('hearts-container');
+    if (heartsContainer) {
+      heartsContainer.style.zIndex = '9998';
+    }
+
   });
 
   // No button runs away
@@ -270,12 +436,16 @@ if (!encoded) {
 
   // No button click message
   noBtn.addEventListener('click', function() {
-    noBtn.textContent = '"Love never fails — 1 Cor 13:8. I\'m not giving up on you." 💌';
-    noBtn.style.fontSize = '11px';
-    noBtn.style.padding = '10px 16px';
     noBtn.style.position = 'relative';
     noBtn.style.left = 'auto';
     noBtn.style.top = 'auto';
+    noBtn.textContent = '"Love never fails — 1 Cor 13:8. I\'m not giving up on you." 💌';
+    noBtn.style.fontSize = '11px';
+    noBtn.style.padding = '10px 16px';
+    noBtn.style.background = 'rgba(139, 38, 53, 0.1)';
+    noBtn.style.border = '1px solid #8b2635';
+    noBtn.style.color = '#8b2635';
+    noBtn.style.borderRadius = '4px';
+    noBtn.style.cursor = 'default';
+    noBtn.style.zIndex = '1';
   });
-
-}
