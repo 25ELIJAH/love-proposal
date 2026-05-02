@@ -2,7 +2,7 @@ const params = new URLSearchParams(window.location.search);
 const encoded = params.get('data');
 
 if (!encoded) {
-  document.body.innerHTML = '<h1 style="color:white;text-align:center;margin-top:4rem;">No proposal data found 💔</h1>';
+  document.body.innerHTML = '<h1 style="color:white;text-align:center;margin-top:4rem;font-family:Georgia,serif;">No proposal data found 💔</h1>';
 } else {
 
   const data = JSON.parse(decodeURIComponent(atob(encoded)));
@@ -49,7 +49,6 @@ ${data.sender}
   });
   messageDiv.appendChild(downloadBtn);
 
-  
   // Load photos from localStorage
   const memoriesDiv = document.getElementById('memories');
   const savedPhotos = localStorage.getItem('proposalPhotos');
@@ -61,19 +60,48 @@ ${data.sender}
     });
   }
 
-  // Play Elvis - Can't Help Falling In Love (free instrumental version)
+  // Background music
   const audio = document.getElementById('love-song');
-  audio.src = 'https://www.bensound.com/bensound-music/bensound-romantic.mp3';
+  audio.src = 'https://cdn.pixabay.com/audio/2022/10/30/audio_b73ed5e8ca.mp3';
   audio.volume = 0.2;
   audio.loop = true;
 
+  // Show tap to play hint
+  const playHint = document.createElement('div');
+  playHint.id = 'play-hint';
+  playHint.textContent = '🎵 Tap anywhere to play music';
+  playHint.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(139, 38, 53, 0.85);
+    color: #f4e4c1;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    z-index: 999;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  `;
+  document.body.appendChild(playHint);
+
+  function startMusic() {
+    audio.play().then(() => {
+      playHint.style.display = 'none';
+    }).catch(() => {});
+  }
+
   // Try autoplay immediately
-  audio.play().catch(() => {
-    // If blocked, play on first click
-    document.addEventListener('click', () => {
-      audio.play();
-    }, { once: true });
-  });
+  startMusic();
+
+  // Play on first click anywhere
+  document.addEventListener('click', () => {
+    startMusic();
+  }, { once: true });
 
   // Floating hearts
   const heartsContainer = document.getElementById('hearts-container');
@@ -127,6 +155,9 @@ ${data.sender}
     noBtn.textContent = '"Love never fails — 1 Cor 13:8. I\'m not giving up on you." 💌';
     noBtn.style.fontSize = '11px';
     noBtn.style.padding = '10px 16px';
+    noBtn.style.position = 'relative';
+    noBtn.style.left = 'auto';
+    noBtn.style.top = 'auto';
   });
 
 }
