@@ -733,3 +733,28 @@ small {
     align-items: flex-start;
   }
 }
+
+/* ---- SCROLLABLE PROPOSAL PAGE ---- */
+
+.proposal-body {
+  overflow-y: auto !important;
+}
+
+.proposal-card {
+  margin: 2rem auto;
+  height: auto;
+  overflow: visible;
+}
+
+.letter-paper {
+  max-height: none;
+  overflow: visible;
+}
+
+.proposal-actions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--parchment-shadow);
+  position: relative;
+  z-index: 2;
+}
